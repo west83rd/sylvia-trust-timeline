@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sylvia Trust — Correspondence Timeline</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 13pt; color: #1a1a1a;
+      background: #f0f2f5; display: flex; min-height: 100vh;
+    }
+    #sidebar {
+      width: 220px; min-width: 220px; background: #2c3e50; color: #ecf0f1;
+      padding: 30px 0; position: fixed; top: 0; left: 0; bottom: 0;
+      overflow-y: auto; z-index: 100;
+    }
+    #sidebar h2 {
+      font-size: 11pt; text-transform: uppercase; letter-spacing: 2px;
+      color: #95a5a6; padding: 0 20px 12px;
+      border-bottom: 1px solid #3d5166; margin-bottom: 12px;
+    }
+    #sidebar a {
+      display: block; padding: 7px 20px; color: #bdc3c7;
+      text-decoration: none; font-family: Arial, sans-serif; font-size: 10.5pt;
+      transition: background 0.15s;
+    }
+    #sidebar a:hover { background: #3d5166; color: #fff; }
+    #main { margin-left: 220px; flex: 1; padding: 40px 50px; max-width: 960px; }
+    .cover {
+      background: #fff; border-radius: 6px; padding: 40px 50px;
+      margin-bottom: 40px; border-left: 6px solid #2c3e50;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .cover h1 { font-size: 22pt; color: #2c3e50; margin-bottom: 10px; }
+    .cover .meta { font-size: 10.5pt; color: #666; font-family: Arial, sans-serif; margin-top: 6px; }
+    .cover .stats { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; }
+    .stat-box {
+      background: #f4f6f8; border-radius: 5px;
+      padding: 12px 20px; text-align: center; min-width: 110px;
+    }
+    .stat-box .num { font-size: 18pt; font-weight: bold; color: #2980b9; font-family: Arial, sans-serif; }
+    .stat-box .lbl { font-size: 9pt; color: #888; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+    .year-divider { display: flex; align-items: center; margin: 40px 0 20px; }
+    .year-divider span {
+      font-family: Arial, sans-serif; font-size: 13pt; font-weight: bold;
+      color: #2c3e50; background: #f0f2f5; padding-right: 14px; white-space: nowrap;
+    }
+    .year-divider::after { content: ''; flex: 1; height: 2px; background: #2c3e50; }
+    .email-card {
+      background: #fff; border-radius: 6px; margin-bottom: 24px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+      border-left: 4px solid #2980b9; page-break-inside: avoid;
+    }
+    .email-card.has-attachments { border-left-color: #27ae60; }
+    .email-header {
+      padding: 14px 20px 12px; border-bottom: 1px solid #eee;
+      background: #fafbfc; border-radius: 6px 6px 0 0;
+    }
+    .email-date { font-family: Arial, sans-serif; font-size: 9.5pt; color: #888; margin-bottom: 6px; }
+    .email-subject { font-size: 13pt; font-weight: bold; color: #1a5276; margin-bottom: 8px; }
+    .email-meta-table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; font-size: 10pt; }
+    .email-meta-table td { padding: 2px 6px 2px 0; vertical-align: top; color: #555; }
+    .email-meta-table td.lbl { font-weight: bold; color: #777; white-space: nowrap; width: 40px; }
+    .email-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 20px; cursor: pointer; user-select: none;
+      background: #f4f6f8; font-family: Arial, sans-serif; font-size: 10pt; color: #555;
+      border-bottom: 1px solid #eee;
+    }
+    .email-toggle:hover { background: #eaecee; }
+    .toggle-arrow { transition: transform 0.2s; }
+    .email-body-wrap { display: none; }
+    .email-body-wrap.open { display: block; }
+    .email-body {
+      padding: 18px 22px; white-space: pre-wrap; word-wrap: break-word;
+      font-size: 11pt; line-height: 1.75; color: #222;
+    }
+    .attachments-bar {
+      padding: 10px 20px; background: #eafaf1;
+      border-top: 1px solid #d5f5e3; border-radius: 0 0 6px 6px;
+      font-family: Arial, sans-serif; font-size: 10pt;
+    }
+    .attachments-bar strong { color: #1e8449; margin-right: 8px; }
+    .att-link {
+      display: inline-block; margin: 3px 6px 3px 0; padding: 3px 10px;
+      background: #d5f5e3; border: 1px solid #a9dfbf; border-radius: 12px;
+      color: #1e8449; text-decoration: none; font-size: 9.5pt;
+    }
+    .att-link:hover { background: #a9dfbf; }
+    .att-missing {
+      display: inline-block; margin: 3px 6px 3px 0; padding: 3px 10px;
+      background: #fef9e7; border: 1px solid #f9e79f; border-radius: 12px;
+      color: #b7950b; font-size: 9.5pt;
+    }
+    #search-bar {
+      width: 100%; padding: 10px 16px; font-size: 11pt;
+      border: 1px solid #ccc; border-radius: 5px;
+      margin-bottom: 24px; font-family: Arial, sans-serif;
+    }
+    @media print {
+      #sidebar { display: none; }
+      #main { margin-left: 0; padding: 20px; }
+      .email-body-wrap { display: block !important; }
+      .email-toggle { display: none; }
+      .email-card { box-shadow: none; border: 1px solid #ccc; margin-bottom: 16px; }
+    }
+  </style>
+</head>
+<body>
+<nav id="sidebar">
+  <h2>Jump to Year</h2>
+  <a href="#year-2021">2021</a>
+  <a href="#year-2022">2022</a>
+</nav>
+<div id="main">
+  <div class="cover">
+    <h1>Sylvia Trust — Correspondence Timeline</h1>
+    <p class="meta">Generated: April 04, 2026</p>
+    <p class="meta" style="margin-top:8px; font-size:9.5pt; color:#999;">
+      This is a self-contained file. Click any attachment badge to download the file directly.
+    </p>
+    <div class="stats">
+      <div class="stat-box"><div class="num">4</div><div class="lbl">Emails</div></div>
+      <div class="stat-box"><div class="num">2</div><div class="lbl">Years</div></div>
+      <div class="stat-box"><div class="num">2</div><div class="lbl">Attachments</div></div>
+      <div class="stat-box"><div class="num">2</div><div class="lbl">Embedded</div></div>
+    </div>
+  </div>
+  <input id="search-bar" type="text" placeholder="Search by subject, sender, or keyword..." oninput="filterEmails(this.value)">
+  <div id="timeline">
+
+  <div class="year-divider" id="year-2021"><span>2021</span></div>
+
+  <div class="email-card" data-search="trust status update john smith &lt;trustee@example.com&gt; jane doe &lt;beneficiary@example.com&gt; dear jane,
+
+i am writing to inform you of the current status of the sylvia trust. the trust assets are being managed in accordance with the trust document dated january 1, 2018.
+
+please feel free to reach out with any questions.
+
+sincerely,
+john smith
+trustee">
+    <div class="email-header">
+      <div class="email-date">March 15, 2021  04:00 PM</div>
+      <div class="email-subject">Trust Status Update</div>
+      <table class="email-meta-table">
+        <tr><td class="lbl">From</td><td>John Smith &lt;trustee@example.com&gt;</td></tr>
+        <tr><td class="lbl">To</td><td>Jane Doe &lt;beneficiary@example.com&gt;</td></tr>
+        
+      </table>
+    </div>
+    <div class="email-toggle" onclick="toggleBody(this)">
+      <span>Show message</span><span class="toggle-arrow">&#9660;</span>
+    </div>
+    <div class="email-body-wrap">
+      <div class="email-body">Dear Jane,
+
+I am writing to inform you of the current status of the Sylvia Trust. The trust assets are being managed in accordance with the trust document dated January 1, 2018.
+
+Please feel free to reach out with any questions.
+
+Sincerely,
+John Smith
+Trustee</div>
+    </div>
+    
+  </div>
+
+  <div class="email-card has-attachments" data-search="trust agreement — please review sarah jones &lt;lawyer@lawfirm.com&gt; jane doe &lt;beneficiary@example.com&gt; dear jane,
+
+please find attached the trust agreement for your review. let me know if you have any questions.
+
+best regards,
+sarah jones
+attorney at law">
+    <div class="email-header">
+      <div class="email-date">April 07, 2021  09:30 PM</div>
+      <div class="email-subject">Trust Agreement — Please Review</div>
+      <table class="email-meta-table">
+        <tr><td class="lbl">From</td><td>Sarah Jones &lt;lawyer@lawfirm.com&gt;</td></tr>
+        <tr><td class="lbl">To</td><td>Jane Doe &lt;beneficiary@example.com&gt;</td></tr>
+        <tr><td class="lbl">Cc</td><td>John Smith &lt;trustee@example.com&gt;</td></tr>
+      </table>
+    </div>
+    <div class="email-toggle" onclick="toggleBody(this)">
+      <span>Show message</span><span class="toggle-arrow">&#9660;</span>
+    </div>
+    <div class="email-body-wrap">
+      <div class="email-body">Dear Jane,
+
+Please find attached the trust agreement for your review. Let me know if you have any questions.
+
+Best regards,
+Sarah Jones
+Attorney at Law</div>
+    </div>
+    <div class="attachments-bar"><strong>Attachments:</strong> <a class="att-link" href="data:application/pdf;base64,ZHVtbXkgcGRmIGNvbnRlbnQ=" download="Trust_Agreement_2021.pdf" target="_blank" rel="noopener">&#128206; Trust_Agreement_2021.pdf</a></div>
+  </div>
+
+  <div class="email-card" data-search="re: trust agreement — please review jane doe &lt;beneficiary@example.com&gt; sarah jones &lt;lawyer@lawfirm.com&gt; thank you for sending this. i have reviewed the agreement and have several concerns i would like to discuss.
+
+regards,
+jane">
+    <div class="email-header">
+      <div class="email-date">April 09, 2021  10:15 AM UTC-07:00</div>
+      <div class="email-subject">Re: Trust Agreement — Please Review</div>
+      <table class="email-meta-table">
+        <tr><td class="lbl">From</td><td>Jane Doe &lt;beneficiary@example.com&gt;</td></tr>
+        <tr><td class="lbl">To</td><td>Sarah Jones &lt;lawyer@lawfirm.com&gt;</td></tr>
+        <tr><td class="lbl">Cc</td><td>John Smith &lt;trustee@example.com&gt;</td></tr>
+      </table>
+    </div>
+    <div class="email-toggle" onclick="toggleBody(this)">
+      <span>Show message</span><span class="toggle-arrow">&#9660;</span>
+    </div>
+    <div class="email-body-wrap">
+      <div class="email-body">Thank you for sending this. I have reviewed the agreement and have several concerns I would like to discuss.
+
+Regards,
+Jane</div>
+    </div>
+    
+  </div>
+
+  <div class="year-divider" id="year-2022"><span>2022</span></div>
+
+  <div class="email-card has-attachments" data-search="q1 account statement john smith &lt;trustee@example.com&gt; jane doe &lt;beneficiary@example.com&gt; please find the q1 account statement attached for your records.
+
+best,
+john">
+    <div class="email-header">
+      <div class="email-date">April 12, 2022  11:00 AM</div>
+      <div class="email-subject">Q1 Account Statement</div>
+      <table class="email-meta-table">
+        <tr><td class="lbl">From</td><td>John Smith &lt;trustee@example.com&gt;</td></tr>
+        <tr><td class="lbl">To</td><td>Jane Doe &lt;beneficiary@example.com&gt;</td></tr>
+        
+      </table>
+    </div>
+    <div class="email-toggle" onclick="toggleBody(this)">
+      <span>Show message</span><span class="toggle-arrow">&#9660;</span>
+    </div>
+    <div class="email-body-wrap">
+      <div class="email-body">Please find the Q1 account statement attached for your records.
+
+Best,
+John</div>
+    </div>
+    <div class="attachments-bar"><strong>Attachments:</strong> <a class="att-link" href="data:application/pdf;base64,ZHVtbXkgc3RhdGVtZW50" download="Account_Statement_Q1.pdf" target="_blank" rel="noopener">&#128206; Account_Statement_Q1.pdf</a></div>
+  </div>
+
+  </div>
+</div>
+<script>
+  function toggleBody(btn) {
+    var wrap  = btn.nextElementSibling;
+    var arrow = btn.querySelector('.toggle-arrow');
+    var label = btn.querySelector('span');
+    if (wrap.classList.contains('open')) {
+      wrap.classList.remove('open');
+      arrow.style.transform = '';
+      label.textContent = 'Show message';
+    } else {
+      wrap.classList.add('open');
+      arrow.style.transform = 'rotate(180deg)';
+      label.textContent = 'Hide message';
+    }
+  }
+  function filterEmails(query) {
+    var q = query.toLowerCase().trim();
+    document.querySelectorAll('.email-card').forEach(function(card) {
+      card.style.display = (!q || (card.getAttribute('data-search') || '').indexOf(q) !== -1) ? '' : 'none';
+    });
+    document.querySelectorAll('.year-divider').forEach(function(div) {
+      var next = div.nextElementSibling, hasVisible = false;
+      while (next && !next.classList.contains('year-divider')) {
+        if (next.classList.contains('email-card') && next.style.display !== 'none') hasVisible = true;
+        next = next.nextElementSibling;
+      }
+      div.style.display = hasVisible ? '' : 'none';
+    });
+  }
+</script>
+</body>
+</html>
